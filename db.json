@@ -1,19 +1,34 @@
 {
-  "posts": [
+  "users": [
     {
-      "id": 1,
-      "title": "json-server",
-      "author": "typicode"
-    }
-  ],
-  "comments": [
+      "id": "1",
+      "name": "Selena Gomez",
+      "email": "selena@mailiantor.com",
+      "songs": ["Souvenir", "Look at her now"]
+    },
     {
-      "id": 1,
-      "body": "some comment",
-      "postId": 1
+      "id": "2",
+      "name": "Taylor Swift",
+      "email": "taylor@mailiantor.com",
+      "songs": ["Lover", "Exile", "Daylight"]
+    },
+    {
+      "id": "3",
+      "name": "Sia",
+      "email": "sia@mailiantor.com",
+      "songs": ["Snowman", "Unstoppable"]
+    },
+    {
+      "id": "4",
+      "name": "Image Dragon",
+      "email": "imd@mailiantor.com",
+      "songs": ["Believer", "Thunder", "Enemy"]
+    },
+    {
+      "id": "5",
+      "name": "Jennifer Lopez",
+      "email": "imd@mailiantor.com",
+      "songs": ["On my way", "On the floor"]
     }
-  ],
-  "profile": {
-    "name": "typicode"
-  }
+  ]
 }

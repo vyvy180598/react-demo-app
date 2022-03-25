@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { Link, Outlet } from 'react-router-dom'
 
-import { Table, Space, Button, Modal, Form, Input } from 'antd'
+import { Table, Space } from 'antd'
 import { User } from '../../redux/user/types'
-import { v4 as uuid } from 'uuid'
-import { getUsers, addUser, deleteUser } from '../../redux/user/actions'
+import { getUsers } from '../../redux/user/actions'
 import { ModalAddUser } from '../../components/User/ModalAddUser'
 import { ModalEditUser } from '../../components/User/ModalEditUser'
+import { ModalDeleteUser } from '../../components/User/ModalDeleteUser'
 
 export const UserPage = () => {
   const users = useAppSelector((state) => state.users.value)
@@ -28,21 +28,12 @@ export const UserPage = () => {
 
   const hanldeClickDelete = (id: string) => {
     setCurrentUserId(id)
-    showModalConfirmDelete()
-  }
-  const showModalConfirmDelete = () => {
     setIsModalDeleteVisible(true)
   }
-
-  const handleConfirmDelete = () => {
-    dispatch(deleteUser(currentUserId))
-    handleCloseDeleteModal()
-  }
-
-  const handleCloseDeleteModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsModalDeleteVisible(false)
     resetCurrentUserId()
-  }
+  }, [isModalDeleteVisible])
 
   const resetCurrentUserId = () => {
     setCurrentUserId('')
@@ -85,21 +76,20 @@ export const UserPage = () => {
         columns={columns}
         pagination={{
           defaultCurrent: 1,
-          pageSizeOptions: ['10', '20', '30'],
+          pageSizeOptions: ['5', '10', '20'],
           showSizeChanger: true,
           position: ['bottomRight']
         }}
         dataSource={users}
       />
       {currentUserId && <ModalEditUser id={currentUserId} />}
-      <Modal
-        title="Delete User"
-        visible={isModalDeleteVisible}
-        onOk={handleConfirmDelete}
-        onCancel={handleCloseDeleteModal}
-      >
-        <p>Are you sure you want to delete this user?</p>
-      </Modal>
+      {currentUserId && (
+        <ModalDeleteUser
+          id={currentUserId}
+          isVisible={isModalDeleteVisible}
+          onClose={handleCloseModal}
+        />
+      )}
       <Outlet />
     </>
   )

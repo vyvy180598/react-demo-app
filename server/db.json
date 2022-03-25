@@ -49,6 +49,19 @@
         "Enemy",
         "Demons"
       ]
+    },
+    {
+      "id": "a9878271-494f-4942-81af-b1a04b6560b7",
+      "name": "Rihanna",
+      "email": "rihanna@mailiantor.com",
+      "songs": [
+        "Diamonds"
+      ]
+    },
+    {
+      "id": "a43ebd3f-bb8a-4962-bfd3-3838fbb176e8",
+      "name": "",
+      "email": ""
     }
   ]
 }
