@@ -1,0 +1,54 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Jennifer Lopez",
+      "email": "jennifer@mailinator.com",
+      "songs": [
+        "On the floor",
+        "On my way"
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Selena Gomez",
+      "email": "selena@mailinator.com",
+      "songs": [
+        "Look at her now",
+        "Souvenir",
+        "It Ain't me",
+        "Crowded room"
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Taylor Swift",
+      "email": "taylor@mailinator.com",
+      "songs": [
+        "Exile",
+        "Lover",
+        "Daylight"
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Sia",
+      "email": "sia@mailinator.com",
+      "songs": [
+        "Unstoppable",
+        "Snowman",
+        "Genius"
+      ]
+    },
+    {
+      "id": "5",
+      "name": "Imagine Dragon",
+      "email": "imd@mailinator.com",
+      "songs": [
+        "Believer",
+        "Enemy",
+        "Demons"
+      ]
+    }
+  ]
+}
