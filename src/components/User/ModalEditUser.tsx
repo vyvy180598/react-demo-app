@@ -7,8 +7,9 @@ import { getUser, updateUser } from '../../redux/user/actions'
 
 type ModalEditorUserProps = {
   id: string
+  isVisible: boolean
 }
-export const ModalEditUser = ({ id }: ModalEditorUserProps) => {
+export const ModalEditUser = ({ id, isVisible }: ModalEditorUserProps) => {
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.users.item)
 
@@ -32,33 +33,29 @@ export const ModalEditUser = ({ id }: ModalEditorUserProps) => {
     handleCloseModal()
   }
 
-  // useEffect(() => {
-  //   let unmounted = false
-  //   if (!unmounted && id) {
-  //     dispatch(getUser(id))
-  //   }
-  //   return () => {
-  //     unmounted = true
-  //   }
-  // }, [id, dispatch])
-
-  // useEffect(() => {
-  //   if (name && email) {
-  //     setIsModalVisible(true)
-  //   }
-  // })
-
   useEffect(() => {
     if (user) {
       setName(user.name)
       setEmail(user.email)
+      isVisible && setIsModalVisible(true)
     }
   }, [user])
+
+  useEffect(() => {
+    let unmounted = false
+    if (!unmounted && id) {
+      dispatch(getUser(id))
+    }
+    setIsModalVisible(isVisible)
+    return () => {
+      unmounted = true
+    }
+  }, [isVisible, dispatch])
 
   return (
     <>
       <Modal
-        title="Add User"
+        title="Edit User"
         visible={isModalVisible}
         onCancel={handleCloseModal}
         footer={[

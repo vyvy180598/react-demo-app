@@ -25,7 +25,12 @@ export const UserPage = () => {
 
   // delete modal
   const [isModalDeleteVisible, setIsModalDeleteVisible] = useState(false)
+  const [isModalEditVisible, setIsModalEditVisible] = useState(false)
 
+  const handleClickEdit = (id: string) => {
+    setCurrentUserId(id)
+    setIsModalEditVisible(true)
+  }
   const hanldeClickDelete = (id: string) => {
     setCurrentUserId(id)
     setIsModalDeleteVisible(true)
@@ -58,7 +63,7 @@ export const UserPage = () => {
       key: 'actionCol',
       render: (text: string, record: User) => (
         <Space size="middle">
-          <a onClick={() => handleEdit(record.id)}>Edit</a>
+          <a onClick={() => handleClickEdit(record.id)}>Edit</a>
 
           <a onClick={() => hanldeClickDelete(record.id)}>Delete</a>
         </Space>
@@ -82,7 +87,9 @@ export const UserPage = () => {
         }}
         dataSource={users}
       />
-      {currentUserId && <ModalEditUser id={currentUserId} />}
+      {currentUserId && (
+        <ModalEditUser id={currentUserId} isVisible={isModalEditVisible} />
+      )}
       {currentUserId && (
         <ModalDeleteUser
           id={currentUserId}
