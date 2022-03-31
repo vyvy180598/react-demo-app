@@ -2,15 +2,33 @@ import { Dashboard } from '../pages/Dashboard'
 import { UserPage } from '../pages/User/UserPage'
 import { UserDetails } from '../pages/User/UserDetails'
 
-import { useRoutes } from 'react-router-dom'
+import { Navigate, useRoutes } from 'react-router-dom'
+import { LoginPage } from '../pages/Login'
+import { MainLayout } from '../layout/MainLayout'
 
-function Routes() {
+const routes = (isLoggedIn: any) => {
   return useRoutes([
-    { path: '/', element: <Dashboard /> },
     {
-      path: '/users',
-      element: <UserPage />,
-      children: [{ path: ':userId', element: <UserDetails /> }]
+      path: '/',
+      element: isLoggedIn ? <MainLayout /> : <Navigate to="/login" />,
+      children: [
+        {
+          path: '',
+          element: <Dashboard />
+        },
+        {
+          path: '/users',
+          element: <UserPage />
+        },
+        {
+          path: '/users/:userId',
+          element: <UserDetails />
+        }
+      ]
+    },
+    {
+      path: '/login',
+      element: !isLoggedIn ? <LoginPage /> : <Navigate to="/" />
     },
     {
       path: '*',
@@ -23,4 +41,4 @@ function Routes() {
   ])
 }
 
-export default Routes
+export default routes

@@ -30,7 +30,12 @@ import {
 
 function* handleGetUsers(action: IGetUsersAction) {
   try {
-    const { data } = yield call(fetchUsers)
+    const { data } = yield call(
+      fetchUsers,
+      action.payload.page,
+      action.payload.limit,
+      action.payload.search
+    )
     yield put(setUsers(data))
   } catch (error) {
     console.error(error)

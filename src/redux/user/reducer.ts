@@ -20,7 +20,7 @@ export const usersSlice = createSlice({
       state.value.push(action.payload)
     },
     editUser(state, action: PayloadAction<User>) {
-      state.value.map((item) =>
+      state.value = state.value.map((item) =>
         item.id === action.payload.id ? action.payload : item
       )
     },

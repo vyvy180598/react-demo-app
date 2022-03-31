@@ -1,21 +1,16 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 
 import { Card, Avatar, Divider } from 'antd'
-import {
-  EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined
-} from '@ant-design/icons'
 
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { getUser } from '../../redux/user/actions'
-import { usersSlice } from '../../redux/user/reducer'
 
 const { Meta } = Card
 
 export const UserDetails = () => {
   const params = useParams()
+  const navigate = useNavigate()
   const user = useAppSelector((state) => state.users.item)
   const dispatch = useAppDispatch()
 
@@ -32,7 +27,11 @@ export const UserDetails = () => {
   return (
     <>
       {user && (
-        <Card style={{ width: '100%' }} title="User Info">
+        <Card
+          style={{ width: '100%' }}
+          title="User Info"
+          extra={<a onClick={() => navigate(-1)}>Back</a>}
+        >
           <Meta
             avatar={
               <Avatar src="https://joeschmoe.io/api/v1/random" key={user.id} />

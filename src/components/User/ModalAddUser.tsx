@@ -1,11 +1,18 @@
 import { Button, Modal, Form, Input } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppDispatch } from '../../redux/hooks'
 
 import { v4 as uuid } from 'uuid'
 import { addUser } from '../../redux/user/actions'
 
-export const ModalAddUser = () => {
+type ModalAddUserProps = {
+  isVisible: boolean
+  onCloseModal: () => void
+}
+export const ModalAddUser = ({
+  isVisible,
+  onCloseModal
+}: ModalAddUserProps) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [songs, setSongs] = useState('')
@@ -22,29 +29,21 @@ export const ModalAddUser = () => {
       ? { id: uuid(), name: name, email: email, songs: [songs] }
       : { id: uuid(), name: name, email: email }
     dispatch(addUser(newUser))
-    handleCloseModal()
-  }
-  const [isModalVisible, setIsModalVisible] = useState(false)
-
-  const showModal = () => {
-    setIsModalVisible(true)
+    onCloseModal()
   }
 
-  const handleCloseModal = () => {
-    setIsModalVisible(false)
-    resetUserForm()
-  }
+  useEffect(() => {
+    isVisible && resetUserForm()
+  }, [isVisible])
+
   return (
     <>
-      <Button type="primary" onClick={showModal}>
-        Add User
-      </Button>
       <Modal
         title="Add User"
-        visible={isModalVisible}
-        onCancel={handleCloseModal}
+        visible={isVisible}
+        onCancel={onCloseModal}
         footer={[
-          <Button key="back" onClick={handleCloseModal}>
+          <Button key="back" onClick={onCloseModal}>
             Cancel
           </Button>,
           <Button

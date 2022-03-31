@@ -6,32 +6,27 @@ import { deleteUser } from '../../redux/user/actions'
 type ModalDeleteUserProps = {
   id: string
   isVisible: boolean
-  onClose: any
+  onCloseModal: () => void
 }
 export const ModalDeleteUser = ({
   id,
   isVisible,
-  onClose
+  onCloseModal
 }: ModalDeleteUserProps) => {
   const dispatch = useAppDispatch()
-  const [isModalVisible, setIsModalVisible] = useState(false)
 
   const handleDelete = () => {
     dispatch(deleteUser(id))
-    setIsModalVisible(false)
+    onCloseModal()
   }
 
-  useEffect(() => {
-    setIsModalVisible(isVisible)
-    isVisible && setIsModalVisible(true)
-  }, [isVisible])
   return (
     <>
       <Modal
         title="Delete User"
-        visible={isModalVisible}
+        visible={isVisible}
         onOk={handleDelete}
-        onCancel={onClose}
+        onCancel={onCloseModal}
       >
         <p>Are you sure you want to delete this user?</p>
       </Modal>

@@ -59,9 +59,28 @@
       ]
     },
     {
-      "id": "a43ebd3f-bb8a-4962-bfd3-3838fbb176e8",
-      "name": "",
-      "email": ""
+      "id": "3ee1ac83-3c46-415c-abaf-6467b72945d8",
+      "name": "Vu",
+      "email": "vu@mailiantor.com",
+      "songs": [
+        "La Lung"
+      ]
+    },
+    {
+      "id": "c541f4a3-bfa0-40bd-a1f2-5cec4e6c5572",
+      "name": "Vu",
+      "email": "vu@mailiantor.com",
+      "songs": [
+        "La Lung"
+      ]
+    },
+    {
+      "id": "3f482627-7c08-4804-bc75-e59a595ab60a",
+      "name": "The Weekend",
+      "email": "wk@mailiantor.com",
+      "songs": [
+        "Save your tear"
+      ]
     }
   ]
 }

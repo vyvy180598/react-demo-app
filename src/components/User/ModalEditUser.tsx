@@ -2,23 +2,26 @@ import { Button, Modal, Form, Input } from 'antd'
 import { useState, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 
-import { v4 as uuid } from 'uuid'
 import { getUser, updateUser } from '../../redux/user/actions'
 
 type ModalEditorUserProps = {
   id: string
   isVisible: boolean
+  onCloseModal: () => void
 }
-export const ModalEditUser = ({ id, isVisible }: ModalEditorUserProps) => {
+export const ModalEditUser = ({
+  id,
+  isVisible,
+  onCloseModal
+}: ModalEditorUserProps) => {
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.users.item)
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [isModalVisible, setIsModalVisible] = useState(false)
 
   const handleCloseModal = () => {
-    setIsModalVisible(false)
+    onCloseModal && onCloseModal()
     resetUserForm()
   }
   const resetUserForm = () => {
@@ -26,10 +29,11 @@ export const ModalEditUser = ({ id, isVisible }: ModalEditorUserProps) => {
     setEmail('')
   }
   const handleSubmit = () => {
-    // dispatch(
-    //   updateUser({ id: uuid(), name: name, email: email, ...user?.songs })
-    // )
-    console.log({ id: uuid(), name: name, email: email, ...user?.songs })
+    user?.songs
+      ? dispatch(
+          updateUser({ id: id, name: name, email: email, songs: user?.songs })
+        )
+      : dispatch(updateUser({ id: id, name: name, email: email }))
     handleCloseModal()
   }
 
@@ -37,18 +41,14 @@ export const ModalEditUser = ({ id, isVisible }: ModalEditorUserProps) => {
     if (user) {
       setName(user.name)
       setEmail(user.email)
-      isVisible && setIsModalVisible(true)
     }
   }, [user])
 
   useEffect(() => {
-    let unmounted = false
-    if (!unmounted && id) {
+    if (isVisible) {
+      setName('')
+      setEmail('')
       dispatch(getUser(id))
-    }
-    setIsModalVisible(isVisible)
-    return () => {
-      unmounted = true
     }
   }, [isVisible, dispatch])
 
@@ -56,7 +56,7 @@ export const ModalEditUser = ({ id, isVisible }: ModalEditorUserProps) => {
     <>
       <Modal
         title="Edit User"
-        visible={isModalVisible}
+        visible={isVisible}
         onCancel={handleCloseModal}
         footer={[
           <Button key="back" onClick={handleCloseModal}>
@@ -72,35 +72,44 @@ export const ModalEditUser = ({ id, isVisible }: ModalEditorUserProps) => {
           </Button>
         ]}
       >
-        <Form
-          id="my-add-user-form"
-          name="basic"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          autoComplete="off"
-          onFinish={handleSubmit}
-        >
-          <Form.Item
-            label="Name"
-            name="name"
-            rules={[{ required: true, message: 'Please input your name!' }]}
+        {name && email && (
+          <Form
+            id="my-add-user-form"
+            name="Edit User"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            autoComplete="off"
+            onFinish={handleSubmit}
+            initialValues={{ name: name, email: email }}
           >
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </Form.Item>
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-              {
-                required: true,
-                type: 'email',
-                message: 'Please input your valid email!'
-              }
-            ]}
-          >
-            <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-          </Form.Item>
-        </Form>
+            <Form.Item
+              label="Name"
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your name'
+                }
+              ]}
+            >
+              <Input value={name} onChange={(e) => setName(e.target.value)} />
+            </Form.Item>
+
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  type: 'email',
+                  message: 'Please input your valid email!'
+                }
+              ]}
+            >
+              <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+            </Form.Item>
+          </Form>
+        )}
       </Modal>
     </>
   )

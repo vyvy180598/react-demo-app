@@ -7,13 +7,17 @@ import reportWebVitals from './reportWebVitals'
 import 'antd/dist/antd.css'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
+import './plugins/i18n'
+import { AuthProvider } from './auth/AuthContext'
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <Router>
-        <App />
-      </Router>
+      <AuthProvider>
+        <Router>
+          <App />
+        </Router>
+      </AuthProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

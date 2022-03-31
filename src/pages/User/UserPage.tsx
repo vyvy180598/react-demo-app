@@ -1,32 +1,45 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
-import { Link, Outlet } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-import { Table, Space } from 'antd'
+import { Table, Space, Button, Input } from 'antd'
 import { User } from '../../redux/user/types'
 import { getUsers } from '../../redux/user/actions'
 import { ModalAddUser } from '../../components/User/ModalAddUser'
 import { ModalEditUser } from '../../components/User/ModalEditUser'
 import { ModalDeleteUser } from '../../components/User/ModalDeleteUser'
+import { useTranslation } from 'react-i18next'
+
+const { Search } = Input
 
 export const UserPage = () => {
   const users = useAppSelector((state) => state.users.value)
   const dispatch = useAppDispatch()
 
+  const { t } = useTranslation()
+
+  // ------- router
+  const navigate = useNavigate()
+  const location = useLocation()
+  // -------
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(5)
+  const [search, setSearch] = useState('')
   useEffect(() => {
-    dispatch(getUsers())
-  }, [dispatch])
+    const query = `?page=${page}&limit=${limit}&s=${search}`
+    navigate({ pathname: location.pathname, search: query }, { replace: true })
+    dispatch(getUsers(page, limit, search))
+  }, [dispatch, page, limit, search])
 
   const [currentUserId, setCurrentUserId] = useState('')
-
-  const handleEdit = (id: string) => {
-    setCurrentUserId(id)
-  }
-
-  // delete modal
-  const [isModalDeleteVisible, setIsModalDeleteVisible] = useState(false)
+  // ------ Modal
+  const [isModalAddVisible, setIsModalAddVisible] = useState(false)
   const [isModalEditVisible, setIsModalEditVisible] = useState(false)
+  const [isModalDeleteVisible, setIsModalDeleteVisible] = useState(false)
 
+  const handleClickAdd = () => {
+    setIsModalAddVisible(true)
+  }
   const handleClickEdit = (id: string) => {
     setCurrentUserId(id)
     setIsModalEditVisible(true)
@@ -35,37 +48,47 @@ export const UserPage = () => {
     setCurrentUserId(id)
     setIsModalDeleteVisible(true)
   }
-  const handleCloseModal = useCallback(() => {
+  const handleCloseModal = () => {
     setIsModalDeleteVisible(false)
     resetCurrentUserId()
-  }, [isModalDeleteVisible])
-
+  }
   const resetCurrentUserId = () => {
     setCurrentUserId('')
   }
   // -------------
+  // -------Pagination
+  const handleChangePagination = (page: number, pageSize: number) => {
+    setPage(page)
+    setLimit(pageSize)
+  }
+  // -------------
+  // -------Search
+  const handleSearch = (value: string) => {
+    setSearch(value)
+  }
+  // -------------
   const columns = [
     {
-      title: 'Name',
+      title: t('name'),
       dataIndex: 'name',
       key: 'nameCol',
       render: (text: string, record: User) => (
-        <Link to={`/users/${record.id}`}>{text}</Link>
+        <a onClick={() => navigate(`/users/${record.id}`)}>{text}</a>
       )
     },
     {
-      title: 'Email',
+      title: t('email'),
       dataIndex: 'email',
       key: 'emailCol'
     },
     {
-      title: 'Action',
+      title: t('action'),
       key: 'actionCol',
       render: (text: string, record: User) => (
         <Space size="middle">
-          <a onClick={() => handleClickEdit(record.id)}>Edit</a>
+          <a onClick={() => handleClickEdit(record.id)}>{t('edit')}</a>
 
-          <a onClick={() => hanldeClickDelete(record.id)}>Delete</a>
+          <a onClick={() => hanldeClickDelete(record.id)}>{t('delete')}</a>
         </Space>
       )
     }
@@ -74,30 +97,49 @@ export const UserPage = () => {
   return (
     <>
       <Space style={{ marginBottom: 16 }}>
-        <ModalAddUser />
+        <Button type="primary" onClick={handleClickAdd}>
+          {t('add_user')}
+        </Button>
+        <Search
+          placeholder={t('input_search')}
+          allowClear
+          style={{ width: 300 }}
+          onSearch={(val, event) => handleSearch(val)}
+        />
       </Space>
       <Table
         rowKey={(user) => user.id}
         columns={columns}
         pagination={{
-          defaultCurrent: 1,
-          pageSizeOptions: ['5', '10', '20'],
+          defaultPageSize: limit,
+          pageSizeOptions: ['5', '10'],
           showSizeChanger: true,
-          position: ['bottomRight']
+          position: ['bottomRight'],
+          total: 10,
+          onChange: handleChangePagination
         }}
         dataSource={users}
       />
+      {isModalAddVisible && (
+        <ModalAddUser
+          isVisible={isModalAddVisible}
+          onCloseModal={() => setIsModalAddVisible(false)}
+        />
+      )}
       {currentUserId && (
-        <ModalEditUser id={currentUserId} isVisible={isModalEditVisible} />
+        <ModalEditUser
+          id={currentUserId}
+          isVisible={isModalEditVisible}
+          onCloseModal={() => setIsModalEditVisible(false)}
+        />
       )}
       {currentUserId && (
         <ModalDeleteUser
           id={currentUserId}
           isVisible={isModalDeleteVisible}
-          onClose={handleCloseModal}
+          onCloseModal={handleCloseModal}
         />
       )}
-      <Outlet />
     </>
   )
 }

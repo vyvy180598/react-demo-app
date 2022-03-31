@@ -9,6 +9,11 @@ import { User } from './types'
 
 export interface IGetUsersAction {
   type: typeof GET_USERS
+  payload: {
+    page: number
+    limit: number
+    search: string
+  }
 }
 
 export interface IGetUserAction {
@@ -39,9 +44,18 @@ export interface IDeleteUserAction {
   }
 }
 
-export const getUsers = (): IGetUsersAction => {
+export const getUsers = (
+  page: number,
+  limit: number,
+  search: string
+): IGetUsersAction => {
   return {
-    type: GET_USERS
+    type: GET_USERS,
+    payload: {
+      page: page,
+      limit: limit,
+      search: search
+    }
   }
 }
 
