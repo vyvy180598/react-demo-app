@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { Table, Space, Button, Input } from 'antd'
 import { User } from '../../redux/user/types'
@@ -9,6 +9,7 @@ import { ModalAddUser } from '../../components/User/ModalAddUser'
 import { ModalEditUser } from '../../components/User/ModalEditUser'
 import { ModalDeleteUser } from '../../components/User/ModalDeleteUser'
 import { useTranslation } from 'react-i18next'
+import { debounce } from 'lodash'
 
 const { Search } = Input
 
@@ -21,15 +22,29 @@ export const UserPage = () => {
   // ------- router
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+
+  let paramsPage: any = searchParams.get('page')
+  paramsPage = paramsPage ? parseInt(paramsPage) : 1
+  let paramsLimit: any = searchParams.get('limit')
+  paramsLimit = paramsLimit ? parseInt(paramsLimit) : 5
+  let paramsSearch = searchParams.get('s')
+  paramsSearch = paramsSearch || ''
+
   // -------
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(5)
-  const [search, setSearch] = useState('')
+  const [page, setPage] = useState<number>(paramsPage)
+  const [limit, setLimit] = useState<number>(paramsLimit)
+  const [search, setSearch] = useState(paramsSearch)
+
   useEffect(() => {
+    replaceRoute(page, limit, search)
+    dispatch(getUsers(page, limit, search))
+  }, [])
+
+  const replaceRoute = (page: number, limit: number, search: string) => {
     const query = `?page=${page}&limit=${limit}&s=${search}`
     navigate({ pathname: location.pathname, search: query }, { replace: true })
-    dispatch(getUsers(page, limit, search))
-  }, [dispatch, page, limit, search])
+  }
 
   const [currentUserId, setCurrentUserId] = useState('')
   // ------ Modal
@@ -44,7 +59,7 @@ export const UserPage = () => {
     setCurrentUserId(id)
     setIsModalEditVisible(true)
   }
-  const hanldeClickDelete = (id: string) => {
+  const handleClickDelete = (id: string) => {
     setCurrentUserId(id)
     setIsModalDeleteVisible(true)
   }
@@ -57,14 +72,23 @@ export const UserPage = () => {
   }
   // -------------
   // -------Pagination
-  const handleChangePagination = (page: number, pageSize: number) => {
-    setPage(page)
+  const handleChangePagination = (currentPage: number, pageSize: number) => {
+    setPage(currentPage)
     setLimit(pageSize)
+
+    replaceRoute(currentPage, pageSize, search)
+    dispatch(getUsers(currentPage, pageSize, search))
   }
   // -------------
   // -------Search
-  const handleSearch = (value: string) => {
-    setSearch(value)
+  const debounceSearch = useCallback(
+    debounce((value) => dispatch(getUsers(page, limit, value)), 2000),
+    []
+  )
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value)
+    replaceRoute(page, limit, e.target.value)
+    debounceSearch(e.target.value)
   }
   // -------------
   const columns = [
@@ -88,7 +112,7 @@ export const UserPage = () => {
         <Space size="middle">
           <a onClick={() => handleClickEdit(record.id)}>{t('edit')}</a>
 
-          <a onClick={() => hanldeClickDelete(record.id)}>{t('delete')}</a>
+          <a onClick={() => handleClickDelete(record.id)}>{t('delete')}</a>
         </Space>
       )
     }
@@ -104,18 +128,19 @@ export const UserPage = () => {
           placeholder={t('input_search')}
           allowClear
           style={{ width: 300 }}
-          onSearch={(val, event) => handleSearch(val)}
+          onChange={handleSearch}
         />
       </Space>
       <Table
         rowKey={(user) => user.id}
         columns={columns}
         pagination={{
+          defaultCurrent: page,
           defaultPageSize: limit,
           pageSizeOptions: ['5', '10'],
           showSizeChanger: true,
           position: ['bottomRight'],
-          total: 10,
+          total: 15,
           onChange: handleChangePagination
         }}
         dataSource={users}
